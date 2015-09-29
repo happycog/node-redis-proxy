@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "http-proxy": "^1.11.2",
+    "redis": "^2.0.1"
+  }
+}
