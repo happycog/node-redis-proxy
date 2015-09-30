@@ -9,7 +9,7 @@ var listenAddresses = [];
 var portsToProxy = process.env.PORTS_TO_PROXY || "80";
 var portMatches = portsToProxy.match(/(\d+)\s*-\s*(\d+)/);
 if (portMatches) {
-  for (var i=portString[1]; i<portString[2]; i++) {
+  for (var i=portMatches[1]; i<portMatches[2]; i++) {
     listenAddresses.push(i);
   }
 }
