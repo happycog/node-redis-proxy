@@ -27,6 +27,7 @@ var server = http.createServer(function(req, res) {
   var port = req.socket.localPort;
   var ip = redisClient.get("upstream."+host+':'+port, function(err, value) {
     if (err || !value) {
+      res.send("domain not found");
       console.log('UNKNOWN HOST ', host, ':', port);
     }
     else {
