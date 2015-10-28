@@ -3,13 +3,16 @@ var http = require('http'),
     redis = require("redis"),
     redisClient = redis.createClient(6379, 'redis', {});
 
+var adminPort = process.env.ADMIN_PORT || 26542;
+
 var proxy = httpProxy.createProxyServer({});
 
 var listenAddresses = [];
 var portsToProxy = process.env.PORTS_TO_PROXY || "80";
 var portMatches = portsToProxy.match(/(\d+)\s*-\s*(\d+)/);
 if (portMatches) {
-  for (var i=portMatches[1]; i<portMatches[2]; i++) {
+  for (var i=portMatches[1]; i<=portMatches[2]; i++) {
+    if (i == adminPort) { continue; }
     listenAddresses.push(i);
   }
 }
@@ -54,5 +57,21 @@ var admin = http.createServer(function(req, res) {
       res.end(body);
     });
   }
+  if (req.method == 'DELETE') {
+    var body = '';
+    req.on('data', function(data) {
+      body += data;
+    });
+    req.on('end', function() {
+      var upstreams = JSON.parse(body);
+      for (var key in upstreams) {
+        var upstream = upstreams[key];
+        console.log('DELETING ', upstream);
+        redisClient.del(upstream);
+      }
+      res.writeHead(200, {'Content-type':'application/json'});
+      res.end(body);
+    });
+  }
 });
-admin.listen(26542);
+admin.listen(adminPort);
