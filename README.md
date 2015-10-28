@@ -1,7 +1,7 @@
 Node/Redis/Proxy
 ----
 
-A super simple proxy that uses Redis as the back-end.
+A simple proxy that uses Redis as the back-end.
 
 To get started, spin up the node app and a redis server. The easiest way to do this is with `docker-compose`. Once you're up and running you can `POST` new upstreams. You can specify multiple upstreams at a time.
 
