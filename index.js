@@ -1,15 +1,13 @@
 var http = require('http'),
     httpProxy = require('http-proxy'),
     redis = require("redis"),
-    redisClient = redis.createClient(6379, 'redis', {});
+    redisClient = redis.createClient(6379, 'redis', {}),
+    adminPort = process.env.ADMIN_PORT || 26542,
+    proxy = httpProxy.createProxyServer({}),
+    listenAddresses = [],
+    portsToProxy = process.env.PORTS_TO_PROXY || "80",
+    portMatches = portsToProxy.match(/(\d+)\s*-\s*(\d+)/);
 
-var adminPort = process.env.ADMIN_PORT || 26542;
-
-var proxy = httpProxy.createProxyServer({});
-
-var listenAddresses = [];
-var portsToProxy = process.env.PORTS_TO_PROXY || "80";
-var portMatches = portsToProxy.match(/(\d+)\s*-\s*(\d+)/);
 if (portMatches) {
   for (var i=portMatches[1]; i<=portMatches[2]; i++) {
     if (i == adminPort) { continue; }
@@ -27,8 +25,8 @@ var server = http.createServer(function(req, res) {
   var port = req.socket.localPort;
   var ip = redisClient.get("upstream."+host+':'+port, function(err, value) {
     if (err || !value) {
-      res.send("domain not found");
-      console.log('UNKNOWN HOST ', host, ':', port);
+      res.end('<html><body><style>html,body{width:100%;height:100%;}body { display: flex; align-items: center; justify-content: center; }</style><h1 style="color:#ccc;font-family:Helvetica Neue;font-weight:100;font-size:112px;">404</h1></body></html>');
+      // console.log('UNKNOWN HOST ', host, ':', port);
     }
     else {
       console.log('PROXYING '+host+':'+port+' TO '+value);
