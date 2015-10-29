@@ -18,14 +18,21 @@ else {
   listenAddresses = [portsToProxy];
 }
 
+function abort404(res) {
+    res.end('<html><body><style>html,body{width:100%;height:100%;}body { display: flex; align-items: center; justify-content: center; }</style><h1 style="color:#ccc;font-family:Helvetica Neue;font-weight:100;font-size:112px;">404</h1></body></html>');
+}
+
 var server = http.createServer(function(req, res) {
+  if (!req.headers.host) {
+      return abort404(res);
+  }
   var host = req.headers.host.split(/\./);
   host.reverse();
   host = host.join('.');
   var port = req.socket.localPort;
   var ip = redisClient.get("upstream."+host+':'+port, function(err, value) {
     if (err || !value) {
-      res.end('<html><body><style>html,body{width:100%;height:100%;}body { display: flex; align-items: center; justify-content: center; }</style><h1 style="color:#ccc;font-family:Helvetica Neue;font-weight:100;font-size:112px;">404</h1></body></html>');
+      return abort404(res);
       // console.log('UNKNOWN HOST ', host, ':', port);
     }
     else {
