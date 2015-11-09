@@ -37,7 +37,9 @@ var server = http.createServer(function(req, res) {
     }
     else {
       console.log('PROXYING '+host+':'+port+' TO '+value);
-      proxy.web(req, res, {"target": value});
+      proxy.web(req, res, {"target": value}, function (e) {
+          return abort404(res);
+      });
     }
   });
 });
