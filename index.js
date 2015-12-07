@@ -36,7 +36,7 @@ var server = http.createServer(function(req, res) {
       // console.log('UNKNOWN HOST ', host, ':', port);
     }
     else {
-      console.log('PROXYING '+host+':'+port+' TO '+value);
+      // console.log('PROXYING '+host+':'+port+' TO '+value);
       proxy.web(req, res, {"target": value}, function (e) {
           return abort404(res);
       });
