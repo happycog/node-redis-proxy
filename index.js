@@ -82,4 +82,5 @@ var admin = http.createServer(function(req, res) {
     });
   }
 });
+console.log('Admin listening on ', adminPort);
 admin.listen(adminPort);
