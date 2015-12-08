@@ -49,12 +49,13 @@ listenAddresses.forEach(function(port) {
 });
 
 var admin = http.createServer(function(req, res) {
-  if (req.method == 'POST') {
-    var body = '';
-    req.on('data', function(data) {
-      body += data;
-    });
-    req.on('end', function() {
+  var body = '';
+  req.on('data', function(data) {
+    body += data;
+  });
+
+  req.on('end', function() {
+    if (req.method == 'POST') {
       var upstreams = JSON.parse(body);
       for (var key in upstreams) {
         var value = upstreams[key];
@@ -63,14 +64,8 @@ var admin = http.createServer(function(req, res) {
       }
       res.writeHead(200, {'Content-type':'application/json'});
       res.end(body);
-    });
-  }
-  if (req.method == 'DELETE') {
-    var body = '';
-    req.on('data', function(data) {
-      body += data;
-    });
-    req.on('end', function() {
+    }
+    if (req.method == 'DELETE') {
       var upstreams = JSON.parse(body);
       for (var key in upstreams) {
         var upstream = upstreams[key];
@@ -79,8 +74,8 @@ var admin = http.createServer(function(req, res) {
       }
       res.writeHead(200, {'Content-type':'application/json'});
       res.end(body);
-    });
-  }
+    }
+  });
 });
 console.log('Admin listening on ', adminPort);
 admin.listen(adminPort);
